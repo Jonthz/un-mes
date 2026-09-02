@@ -573,21 +573,31 @@ const CONFIG = {
   const btnMusica = document.getElementById("btnMusica");
 
   if (CONFIG.musica){
-    audio.src = CONFIG.musica;
+    audio.src = encodeURI(CONFIG.musica);
     audio.volume = 0;
+    audio.load();
     btnMusica.hidden = false;
-    audio.addEventListener("error", () => { btnMusica.hidden = true; });
+    audio.addEventListener("error", () => {
+      btnMusica.title = "No se encontró " + CONFIG.musica;
+      console.warn("No cargó el audio:", audio.src);
+    });
 
     let subiendo = null;
     function sonar(){
-      audio.play().then(() => {
+      const p = audio.play();
+      if (!p) return;
+      p.then(() => {
         btnMusica.classList.remove("pausada");
         clearInterval(subiendo);
         subiendo = setInterval(() => {
           audio.volume = Math.min(0.55, audio.volume + 0.02);
           if (audio.volume >= 0.55) clearInterval(subiendo);
         }, 90);
-      }).catch(() => {});
+      }).catch(() => {
+        // el navegador lo bloqueó: queda a la espera de que toquen el botón
+        audio.volume = 0.55;
+        btnMusica.classList.add("pausada");
+      });
     }
     function callar(){
       audio.pause();
@@ -602,9 +612,11 @@ const CONFIG = {
     });
 
     // arranca sola en cuanto toque cualquier cosa de la página
-    document.addEventListener("pointerdown", function primera(){
-      document.removeEventListener("pointerdown", primera);
-      sonar();
+    ["pointerdown","click","touchend"].forEach(ev => {
+      document.addEventListener(ev, function primera(){
+        ["pointerdown","click","touchend"].forEach(e2 => document.removeEventListener(e2, primera));
+        sonar();
+      });
     });
   }
 
