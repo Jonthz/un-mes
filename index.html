@@ -31,6 +31,15 @@
     min-height:100%;
   }
   .escenas{flex:1;display:flex;align-items:center;justify-content:center;padding:3vh 5vw 0}
+  @media (max-width:560px){
+    .escenas{padding:2vh 3vw 0}
+    .nav{padding:1.4rem 3vw 1.8rem}
+    .papel{padding:1.3rem 1.2rem;font-size:1.06rem;line-height:1.68}
+    .cupon{font-size:1.02rem;padding:1rem 1.05rem}
+    .centro-grande{font-size:86px}
+    .centro-pie{font-size:24px}
+    .grabado{font-size:34px}
+  }
   .escena{display:none;width:100%;max-width:760px;text-align:center}
   .escena.activa{display:block}
   h2{
@@ -43,7 +52,7 @@
   .sub{margin:0;color:rgba(255,241,220,.6);font-size:clamp(.88rem,2vw,1rem)}
 
   /* ---- 1. ramo ---- */
-  #ramo{width:min(78vw,420px);height:auto;margin:1rem auto 0;display:block}
+  #ramo{width:min(90vw,440px);height:auto;margin:1rem auto 0;display:block}
   .brote{
     transform-box:view-box;
     transform-origin:300px 476px;
@@ -151,10 +160,31 @@
   .compartir[hidden]{display:none}
   .compartir:hover,.compartir:focus-visible{filter:brightness(1.08);outline:none}
 
+  .musica{
+    position:fixed;
+    top:14px; right:14px;
+    width:44px; height:44px;
+    border-radius:50%;
+    border:1px solid rgba(255,241,220,.3);
+    background:rgba(255,241,220,.08);
+    color:#FFF1DC;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    z-index:5;
+    transition:background .2s ease,opacity .3s ease;
+  }
+  .musica:hover,.musica:focus-visible{background:rgba(255,241,220,.2);outline:none}
+  .musica svg{width:19px;height:19px;fill:currentColor}
+  .musica .off{display:none}
+  .musica.pausada{opacity:.55}
+  .musica.pausada .on{display:none}
+  .musica.pausada .off{display:block}
+  .musica[hidden]{display:none}
+
   /* ---- anillo ---- */
-  #anillo{width:min(84vw,430px);height:auto;margin:.6rem auto 0;display:block;cursor:grab;touch-action:pan-y}
+  #anillo{width:min(95vw,470px);height:auto;margin:.6rem auto 0;display:block;cursor:grab;touch-action:pan-y}
   #anillo:active{cursor:grabbing}
-  .grabado{font-family:"Fraunces",Georgia,serif;font-size:23px;font-weight:400;letter-spacing:.6px;fill:#DCDDE4}
+  .grabado{font-family:"Fraunces",Georgia,serif;font-size:31px;font-weight:400;letter-spacing:.6px;fill:#DCDDE4}
   .centro-grande{font-family:"Fraunces",Georgia,serif;font-weight:300;font-size:76px;fill:#FFF1DC}
   .centro-pie{font-family:"Karla",sans-serif;font-size:21px;fill:rgba(255,241,220,.6);letter-spacing:.03em}
 
@@ -196,6 +226,9 @@ const CONFIG = {
 
   carta: "Hoy cumplimos un mes, oficialmente, un mes siendo novios, desde que en aquella habitación de Quito, te di aquel anillo, que aunque fugaz su duración contigo, simbolizó todo, lo tanto que te amo. Un mes ya, y llevamos aquellos anillos que nos recuerdan nuestra conexión cada día, superando cada obstáculo. Te amo <3, y espero que el conteo de meses llegue hasta el infinito. Espera la verdadera celebración cuando llegue a Lima.",
 
+  // Nombre del archivo de música que subas al repo. Déjalo en "" si no quieres música.
+  musica: "amor_de_mis_amores.mp3",
+
   // Lo que va grabado dentro del anillo. Corto, como un grabado de verdad.
   grabado: "1 month with my soul  ·  ",
   anilloCentro: "Quito",
@@ -217,6 +250,12 @@ const CONFIG = {
 };
 /* ========================================== */
 </script>
+
+<audio id="audio" loop preload="auto"></audio>
+<button class="musica pausada" id="btnMusica" aria-label="Música" hidden>
+  <svg class="on" viewBox="0 0 24 24"><path d="M12 3v10.6A4 4 0 1 0 14 17V7h5V3z"/></svg>
+  <svg class="off" viewBox="0 0 24 24"><path d="M12 3v10.6A4 4 0 1 0 14 17V7h5V3zM3 3l18 18-1.4 1.4L1.6 4.4z"/></svg>
+</button>
 
 <div class="escenas">
 
@@ -247,7 +286,7 @@ const CONFIG = {
   <section class="escena" id="e-anillo">
     <h2>Lo que dice por dentro</h2>
     <p class="sub">Gíralo con el dedo para leerlo más rápido.</p>
-    <svg id="anillo" viewBox="0 0 720 720" role="img" aria-label="Un anillo con un mensaje grabado por dentro">
+    <svg id="anillo" viewBox="70 70 590 590" role="img" aria-label="Un anillo con un mensaje grabado por dentro">
       <defs>
         <linearGradient id="oro" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#55555F"/><stop offset="34%" stop-color="#1C1C22"/>
@@ -261,7 +300,7 @@ const CONFIG = {
           <stop offset="0%" stop-color="#000"/><stop offset="18%" stop-color="#fff"/>
           <stop offset="82%" stop-color="#fff"/><stop offset="100%" stop-color="#000"/>
         </linearGradient>
-        <mask id="ventana"><rect x="80" y="96" width="560" height="82" fill="url(#desvanecer)"/></mask>
+        <mask id="ventana"><rect x="80" y="82" width="560" height="104" fill="url(#desvanecer)"/></mask>
         <radialGradient id="brillo" cx="50%" cy="50%">
           <stop offset="0%" stop-color="#C9CBD6" stop-opacity=".22"/>
           <stop offset="100%" stop-color="#C9CBD6" stop-opacity="0"/>
@@ -528,6 +567,46 @@ const CONFIG = {
     else cajaLima.innerHTML = "Y ya pasó lo de Lima, que era lo que de verdad importaba.";
   }
   faltan();
+
+  /* ---------- música ---------- */
+  const audio = document.getElementById("audio");
+  const btnMusica = document.getElementById("btnMusica");
+
+  if (CONFIG.musica){
+    audio.src = CONFIG.musica;
+    audio.volume = 0;
+    btnMusica.hidden = false;
+    audio.addEventListener("error", () => { btnMusica.hidden = true; });
+
+    let subiendo = null;
+    function sonar(){
+      audio.play().then(() => {
+        btnMusica.classList.remove("pausada");
+        clearInterval(subiendo);
+        subiendo = setInterval(() => {
+          audio.volume = Math.min(0.55, audio.volume + 0.02);
+          if (audio.volume >= 0.55) clearInterval(subiendo);
+        }, 90);
+      }).catch(() => {});
+    }
+    function callar(){
+      audio.pause();
+      audio.volume = 0;
+      clearInterval(subiendo);
+      btnMusica.classList.add("pausada");
+    }
+
+    btnMusica.addEventListener("click", e => {
+      e.stopPropagation();
+      audio.paused ? sonar() : callar();
+    });
+
+    // arranca sola en cuanto toque cualquier cosa de la página
+    document.addEventListener("pointerdown", function primera(){
+      document.removeEventListener("pointerdown", primera);
+      sonar();
+    });
+  }
 
   /* ---------- navegación ---------- */
   const escenas = [...document.querySelectorAll(".escena")];
