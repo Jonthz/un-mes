@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Un mes oficial</title>
+<!-- Preview del link en WhatsApp. Cambia la URL si tu repo se llama distinto. -->
+<meta property="og:title" content="Un mes oficial">
+<meta property="og:description" content="Ábrelo tú. Es para ti.">
+<meta property="og:image" content="https://jonthz.github.io/un-mes/preview.png">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=Karla:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --noche:#1A1233;
+    --crema:#FFF1DC;
+    --rosa:#E4738C;
+    --oro:#FFC24B;
+    --verde:#6FAF7F;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    background:radial-gradient(125% 95% at 50% 112%, #3B2159 0%, #1A1233 64%);
+    color:var(--crema);
+    font-family:"Karla",-apple-system,"Segoe UI",sans-serif;
+    display:flex;
+    flex-direction:column;
+    min-height:100%;
+  }
+  .escenas{flex:1;display:flex;align-items:center;justify-content:center;padding:3vh 5vw 0}
+  .escena{display:none;width:100%;max-width:760px;text-align:center}
+  .escena.activa{display:block}
+  h2{
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:300;
+    font-size:clamp(1.8rem,5vw,3.1rem);
+    letter-spacing:-.02em;
+    margin:0 0 .3rem;
+  }
+  .sub{margin:0;color:rgba(255,241,220,.6);font-size:clamp(.88rem,2vw,1rem)}
+
+  /* ---- 1. ramo ---- */
+  #ramo{width:min(78vw,420px);height:auto;margin:1rem auto 0;display:block}
+  .brote{
+    transform-box:view-box;
+    transform-origin:300px 476px;
+    transform:scale(0) ;
+    transition:transform 1.1s cubic-bezier(.2,1.25,.35,1);
+    transition-delay:var(--d,0s);
+  }
+  .abierto .brote{transform:scale(1)}
+
+  /* ---- 2. carta ---- */
+  .papel{
+    background:#FFF6E8;
+    color:#3A2A2A;
+    border-radius:4px;
+    padding:clamp(1.6rem,5vw,2.8rem);
+    margin:1.4rem auto 0;
+    max-width:56ch;
+    text-align:left;
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:300;
+    font-size:clamp(1rem,2.4vw,1.28rem);
+    line-height:1.72;
+    min-height:12rem;
+    box-shadow:0 18px 50px rgba(0,0,0,.35);
+  }
+  .cursor{
+    display:inline-block;
+    width:2px;height:1.05em;
+    background:#3A2A2A;
+    vertical-align:-.18em;
+    animation:parpadeo .9s step-end infinite;
+  }
+  .cursor.fin{display:none}
+  @keyframes parpadeo{50%{opacity:0}}
+  .firma{margin-top:1.3rem;display:block;color:#8A6A55}
+
+  /* ---- 3. cupones ---- */
+  .cupones{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:.9rem;
+    margin:1.6rem 0 0;
+    padding:0;
+    list-style:none;
+    text-align:left;
+  }
+  .cupon{
+    position:relative;
+    background:rgba(255,241,220,.06);
+    border:1px dashed rgba(255,241,220,.4);
+    border-radius:10px;
+    color:var(--crema);
+    font-family:inherit;
+    font-size:1rem;
+    line-height:1.45;
+    padding:1.1rem 1.2rem;
+    width:100%;
+    text-align:left;
+    cursor:pointer;
+    transition:background .2s ease,border-color .2s ease,transform .2s ease;
+  }
+  .cupon:hover,.cupon:focus-visible{background:rgba(255,241,220,.12);border-color:var(--oro);outline:none}
+  .cupon .sello{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    font-family:"Fraunces",Georgia,serif;
+    font-size:1.35rem;
+    color:var(--rosa);
+    border:3px solid var(--rosa);
+    border-radius:10px;
+    transform:rotate(-9deg) scale(.9);
+    background:rgba(26,18,51,.72);
+  }
+  .cupon.canjeado{opacity:.85;border-style:solid;cursor:default}
+  .cupon.canjeado .sello{display:flex}
+
+  .lima{
+    margin:2rem auto 0;
+    max-width:44ch;
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:300;
+    font-size:clamp(1.05rem,2.6vw,1.4rem);
+    line-height:1.5;
+    color:var(--crema);
+  }
+  .lima b{color:var(--oro);font-weight:500;font-variant-numeric:tabular-nums}
+
+  .compartir{
+    display:block;
+    width:100%;
+    margin-top:.45rem;
+    background:var(--oro);
+    border:0;
+    border-radius:8px;
+    color:#2A1B12;
+    font-family:inherit;
+    font-weight:500;
+    font-size:.92rem;
+    padding:.62rem 1rem;
+    cursor:pointer;
+  }
+  .compartir[hidden]{display:none}
+  .compartir:hover,.compartir:focus-visible{filter:brightness(1.08);outline:none}
+
+  /* ---- anillo ---- */
+  #anillo{width:min(84vw,430px);height:auto;margin:.6rem auto 0;display:block;cursor:grab;touch-action:pan-y}
+  #anillo:active{cursor:grabbing}
+  .grabado{font-family:"Fraunces",Georgia,serif;font-size:23px;font-weight:400;letter-spacing:.6px;fill:#DCDDE4}
+  .centro-grande{font-family:"Fraunces",Georgia,serif;font-weight:300;font-size:76px;fill:#FFF1DC}
+  .centro-pie{font-family:"Karla",sans-serif;font-size:21px;fill:rgba(255,241,220,.6);letter-spacing:.03em}
+
+  /* ---- navegación ---- */
+  .nav{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:1.2rem;
+    padding:2rem 5vw 2.4rem;
+  }
+  .puntos{display:flex;gap:.5rem}
+  .punto{width:8px;height:8px;border-radius:50%;background:rgba(255,241,220,.28);border:0;padding:0;cursor:pointer}
+  .punto.on{background:var(--oro)}
+  .boton{
+    background:none;
+    border:1px solid rgba(255,241,220,.35);
+    color:var(--crema);
+    font-family:inherit;
+    font-size:1rem;
+    padding:.65rem 1.5rem;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .2s ease,border-color .2s ease;
+  }
+  .boton:hover,.boton:focus-visible{background:rgba(255,241,220,.12);border-color:rgba(255,241,220,.75);outline:none}
+  @media (prefers-reduced-motion:reduce){
+    .brote{transition-duration:.01ms}
+    .cursor{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<script>
+/* =============== EDITA ESTO =============== */
+const CONFIG = {
+  nombre: "Sol",
+
+  carta: "Hoy cumplimos un mes, oficialmente, un mes siendo novios, desde que en aquella habitación de Quito, te di aquel anillo, que aunque fugaz su duración contigo, simbolizó todo, lo tanto que te amo. Un mes ya, y llevamos aquellos anillos que nos recuerdan nuestra conexión cada día, superando cada obstáculo. Te amo <3, y espero que el conteo de meses llegue hasta el infinito. Espera la verdadera celebración cuando llegue a Lima.",
+
+  // Lo que va grabado dentro del anillo. Corto, como un grabado de verdad.
+  grabado: "1 month with my soul  ·  ",
+  anilloCentro: "Quito",
+  anilloPie: "donde empezó",
+
+  // Fecha en que llegas a Lima (año-mes-día)
+  lima: "2026-09-10T00:00:00",
+
+  firma: "Jonathan",
+
+  cupones: [
+    "El primer plan lo elijo yo, en Lima",
+    "Un día entero en Lima armado por ti, yo no pregunto nada",
+    "Te leo un libro por llamada, un capítulo por noche, el que tú elijas",
+    "Aprendo a cocinar tu plato favorito y te lo hago cuando nos veamos",
+    "Un recorrido en video de mi día completo, para que veas dónde estoy cuando hablamos",
+    "Un cupón en blanco: pides algo y no hago preguntas"
+  ]
+};
+/* ========================================== */
+</script>
+
+<div class="escenas">
+
+  <!-- 1. RAMO -->
+  <section class="escena activa" id="e1">
+    <h2 id="t1"></h2>
+    <p class="sub">Toca el ramo.</p>
+    <svg id="ramo" viewBox="0 0 600 620" role="img" aria-label="Un ramo de flores">
+      <g id="tallos"></g>
+      <!-- papel -->
+      <path d="M300 618 L188 470 Q300 500 412 470 Z" fill="#FFF0DE" opacity=".92"/>
+      <path d="M300 618 L188 470 Q244 486 300 490 Z" fill="#F2D9C0" opacity=".9"/>
+      <path d="M232 512 Q300 534 368 512" stroke="#E4738C" stroke-width="7" fill="none" stroke-linecap="round"/>
+    </svg>
+  </section>
+
+  <!-- 2. CARTA -->
+  <section class="escena" id="e2">
+    <h2>Te escribí esto</h2>
+    <p class="sub">Toca para que salga de una vez.</p>
+    <div class="papel" id="papel">
+      <span id="texto"></span><span class="cursor" id="cursor"></span>
+      <span class="firma" id="firma"></span>
+    </div>
+  </section>
+
+  <!-- 3. ANILLO -->
+  <section class="escena" id="e-anillo">
+    <h2>Lo que dice por dentro</h2>
+    <p class="sub">Gíralo con el dedo para leerlo más rápido.</p>
+    <svg id="anillo" viewBox="0 0 720 720" role="img" aria-label="Un anillo con un mensaje grabado por dentro">
+      <defs>
+        <linearGradient id="oro" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#55555F"/><stop offset="34%" stop-color="#1C1C22"/>
+          <stop offset="66%" stop-color="#0A0A0D"/><stop offset="100%" stop-color="#3E3E48"/>
+        </linearGradient>
+        <linearGradient id="rosa" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#F4F5F8"/><stop offset="52%" stop-color="#9EA0AA"/>
+          <stop offset="100%" stop-color="#D7D9E0"/>
+        </linearGradient>
+        <linearGradient id="desvanecer" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#000"/><stop offset="18%" stop-color="#fff"/>
+          <stop offset="82%" stop-color="#fff"/><stop offset="100%" stop-color="#000"/>
+        </linearGradient>
+        <mask id="ventana"><rect x="80" y="96" width="560" height="82" fill="url(#desvanecer)"/></mask>
+        <radialGradient id="brillo" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#C9CBD6" stop-opacity=".22"/>
+          <stop offset="100%" stop-color="#C9CBD6" stop-opacity="0"/>
+        </radialGradient>
+        <path id="aro" d="M 130 360 A 230 230 0 1 1 590 360 A 230 230 0 1 1 130 360"/>
+      </defs>
+
+      <circle cx="360" cy="360" r="215" fill="url(#brillo)"/>
+      <circle cx="512" cy="536" r="104" fill="none" stroke="url(#rosa)" stroke-width="22" opacity=".78"/>
+      <circle cx="360" cy="360" r="230" fill="none" stroke="url(#oro)" stroke-width="48"/>
+      <circle cx="360" cy="360" r="254" fill="none" stroke="#A6A8B4" stroke-width="2" opacity=".6"/>
+      <circle cx="360" cy="360" r="206" fill="none" stroke="#A6A8B4" stroke-width="2" opacity=".6"/>
+      <path d="M 178 218 A 230 230 0 0 1 300 138" fill="none" stroke="#FFFFFF" stroke-width="9" opacity=".38" stroke-linecap="round"/>
+
+      <g mask="url(#ventana)">
+        <text class="grabado" dominant-baseline="middle">
+          <textPath id="ruta" href="#aro" startOffset="620">·</textPath>
+        </text>
+      </g>
+
+      <text class="centro-grande" x="360" y="372" text-anchor="middle" id="centroGrande"></text>
+      <text class="centro-pie"    x="360" y="412" text-anchor="middle" id="centroPie"></text>
+    </svg>
+  </section>
+
+  <!-- 3. CUPONES -->
+  <section class="escena" id="e3">
+    <h2>Seis cosas que me puedes cobrar</h2>
+    <p class="sub">Toca uno para canjearlo. No caducan.</p>
+    <ul class="cupones" id="cupones"></ul>
+    <p class="lima" id="lima"></p>
+  </section>
+
+</div>
+
+<nav class="nav">
+  <div class="puntos" id="puntos"></div>
+  <button class="boton" id="siguiente">Siguiente</button>
+</nav>
+
+<script>
+  document.getElementById("t1").textContent = "Un mes oficial, " + CONFIG.nombre;
+  document.getElementById("firma").textContent = "Con todo, " + CONFIG.firma;
+
+  /* ---------- ramo ---------- */
+  const NS = "http://www.w3.org/2000/svg";
+  const tallos = document.getElementById("tallos");
+  const paleta = ["#E4738C","#FFC24B","#F3A0B4","#FFD98A","#E4738C","#FFC24B","#F3A0B4"];
+  const angulos = [-42,-28,-14,0,14,28,42];
+  const largos  = [268,318,352,382,350,316,266];
+
+  function crear(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;}
+
+  angulos.forEach((ang,i) => {
+    const rad = ang * Math.PI / 180;
+    const bx = 300, by = 476;
+    const hx = bx + Math.sin(rad) * largos[i];
+    const hy = by - Math.cos(rad) * largos[i];
+    const g = crear("g", {class:"brote"});
+    g.style.setProperty("--d", (Math.abs(ang)/42*0.35 + 0.05).toFixed(2) + "s");
+
+    g.appendChild(crear("path", {
+      d:`M${bx} ${by} Q ${bx + Math.sin(rad)*largos[i]*0.4} ${by - largos[i]*0.55} ${hx} ${hy}`,
+      stroke:"#6FAF7F","stroke-width":6,fill:"none","stroke-linecap":"round"
+    }));
+
+    const mx = bx + Math.sin(rad)*largos[i]*0.5, my = by - Math.cos(rad)*largos[i]*0.5;
+    g.appendChild(crear("ellipse",{
+      cx:mx, cy:my, rx:20, ry:9, fill:"#6FAF7F", opacity:.95,
+      transform:`rotate(${ang+18} ${mx} ${my})`
+    }));
+
+    const cabeza = crear("g",{transform:`translate(${hx},${hy})`});
+    for (let p=0;p<6;p++){
+      cabeza.appendChild(crear("ellipse",{
+        cx:0,cy:-19,rx:11,ry:19,fill:paleta[i],opacity:.96,transform:`rotate(${p*60})`
+      }));
+    }
+    cabeza.appendChild(crear("circle",{cx:0,cy:0,r:9,fill:"#FFF0DE"}));
+    g.appendChild(cabeza);
+    tallos.appendChild(g);
+  });
+
+  const svgRamo = document.getElementById("ramo");
+  function abrirRamo(){ svgRamo.parentElement.classList.add("abierto"); }
+  svgRamo.addEventListener("click", abrirRamo);
+
+  /* ---------- carta ---------- */
+  const destino = document.getElementById("texto");
+  const cursor = document.getElementById("cursor");
+  let iCarta = 0, timer = null, cartaLista = false;
+
+  function escribir(){
+    if (cartaLista) return;
+    timer = setInterval(() => {
+      destino.textContent = CONFIG.carta.slice(0, ++iCarta);
+      if (iCarta >= CONFIG.carta.length){ terminarCarta(); }
+    }, 32);
+  }
+  function terminarCarta(){
+    clearInterval(timer);
+    cartaLista = true;
+    destino.textContent = CONFIG.carta;
+    cursor.classList.add("fin");
+  }
+  document.getElementById("papel").addEventListener("click", terminarCarta);
+
+  /* ---------- cupones ---------- */
+  const lista = document.getElementById("cupones");
+  CONFIG.cupones.forEach(txt => {
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.className = "cupon";
+    b.innerHTML = '<span class="sello">Canjeado</span>';
+    b.insertBefore(document.createTextNode(txt), b.firstChild);
+
+    const compartir = document.createElement("button");
+    compartir.className = "compartir";
+    compartir.textContent = "Guardar imagen para mandar";
+    compartir.hidden = true;
+
+    b.addEventListener("click", () => { b.classList.add("canjeado"); compartir.hidden = false; });
+    compartir.addEventListener("click", () => generarImagen(txt));
+
+    li.appendChild(b);
+    li.appendChild(compartir);
+    lista.appendChild(li);
+  });
+
+  /* ---- imagen del canje, para mandar por WhatsApp ---- */
+  function generarImagen(texto){
+    const W = 1080, H = 1350;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const x = c.getContext("2d");
+
+    const fondo = x.createRadialGradient(W/2, H*0.42, 60, W/2, H*0.42, W*0.95);
+    fondo.addColorStop(0, "#3B2159");
+    fondo.addColorStop(1, "#150E2A");
+    x.fillStyle = fondo; x.fillRect(0,0,W,H);
+
+    x.strokeStyle = "#FFC24B"; x.lineWidth = 4;
+    x.setLineDash([16,12]); x.strokeRect(56,56,W-112,H-112); x.setLineDash([]);
+
+    x.textAlign = "center";
+    x.fillStyle = "rgba(255,241,220,.55)";
+    x.font = "500 34px Karla, sans-serif";
+    x.fillText("CUPÓN CANJEADO", W/2, 200);
+
+    // texto del cupón, partido en líneas
+    x.fillStyle = "#FFF1DC";
+    x.font = "300 68px Fraunces, Georgia, serif";
+    const palabras = texto.split(" ");
+    const lineas = []; let linea = "";
+    palabras.forEach(p => {
+      const prueba = linea ? linea + " " + p : p;
+      if (x.measureText(prueba).width > W - 240){ lineas.push(linea); linea = p; }
+      else linea = prueba;
+    });
+    if (linea) lineas.push(linea);
+    let y = H/2 - (lineas.length - 1) * 46;
+    lineas.forEach(l => { x.fillText(l, W/2, y); y += 92; });
+
+    // sello
+    x.strokeStyle = "#E4738C"; x.lineWidth = 6;
+    x.save();
+    x.translate(W/2, H - 330); x.rotate(-0.14);
+    x.strokeRect(-230, -60, 460, 120);
+    x.fillStyle = "#E4738C";
+    x.font = "400 62px Fraunces, Georgia, serif";
+    x.fillText("CANJEADO", 0, 22);
+    x.restore();
+
+    const f = new Date();
+    x.fillStyle = "rgba(255,241,220,.5)";
+    x.font = "400 32px Karla, sans-serif";
+    x.fillText(CONFIG.nombre + " y " + CONFIG.firma + "  ·  " +
+               f.toLocaleDateString("es-EC", {day:"numeric", month:"long", year:"numeric"}),
+               W/2, H - 130);
+
+    c.toBlob(blob => {
+      const archivo = new File([blob], "cupon-canjeado.png", {type:"image/png"});
+      if (navigator.canShare && navigator.canShare({files:[archivo]})){
+        navigator.share({
+          files:[archivo],
+          text:"Canjeo este: " + texto
+        }).catch(err => { if (err.name !== "AbortError") descargar(blob); });
+      } else {
+        descargar(blob);
+      }
+    }, "image/png");
+  }
+
+  function descargar(blob){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "cupon-canjeado.png";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  /* ---------- anillo ---------- */
+  document.getElementById("centroGrande").textContent = CONFIG.anilloCentro;
+  document.getElementById("centroPie").textContent = CONFIG.anilloPie;
+
+  const ruta = document.getElementById("ruta");
+  const svgAnillo = document.getElementById("anillo");
+  const ENTRA = 620, SALE = 120;
+  let frases = [], iFrase = 0, offset = ENTRA, largo = 0, impulso = 0, anilloVivo = false;
+
+  (function partir(){
+    let acum = "";
+    CONFIG.grabado.split(/\s+/).forEach(w => {
+      if ((acum + " " + w).trim().length > 78){ frases.push(acum.trim()); acum = w; }
+      else acum += " " + w;
+    });
+    if (acum.trim()) frases.push(acum.trim());
+  })();
+
+  function cargarFrase(n){
+    iFrase = n % frases.length;
+    ruta.textContent = frases[iFrase];
+    largo = ruta.getComputedTextLength();
+    offset = ENTRA;
+    ruta.setAttribute("startOffset", offset);
+  }
+
+  function girar(){
+    if (!anilloVivo) return;
+    offset -= 1.05 + impulso;
+    impulso *= 0.92;
+    if (offset + largo < SALE) cargarFrase(iFrase + 1);
+    else ruta.setAttribute("startOffset", offset);
+    requestAnimationFrame(girar);
+  }
+
+  function iniciarAnillo(){
+    if (anilloVivo) return;
+    anilloVivo = true;
+    cargarFrase(0);
+    requestAnimationFrame(girar);
+  }
+
+  let arrastrando = false, ultimoX = 0;
+  svgAnillo.addEventListener("pointerdown", e => { arrastrando = true; ultimoX = e.clientX; svgAnillo.setPointerCapture(e.pointerId); });
+  svgAnillo.addEventListener("pointermove", e => {
+    if (!arrastrando) return;
+    impulso = Math.max(-2, Math.min(9, (ultimoX - e.clientX) * 0.28));
+    ultimoX = e.clientX;
+  });
+  ["pointerup","pointercancel","pointerleave"].forEach(ev =>
+    svgAnillo.addEventListener(ev, () => { arrastrando = false; })
+  );
+
+  /* ---------- Lima ---------- */
+  const lima = new Date(CONFIG.lima);
+  const cajaLima = document.getElementById("lima");
+  function faltan(){
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const d = Math.round((lima - hoy) / 86400000);
+    if (d > 1)  cajaLima.innerHTML = "Pero esto es el ensayo. La celebración de verdad es en Lima, en <b>" + d + " días</b>.";
+    else if (d === 1) cajaLima.innerHTML = "Pero esto es el ensayo. La celebración de verdad es en Lima, <b>mañana</b>.";
+    else if (d === 0) cajaLima.innerHTML = "Y hoy es el día. Estoy en Lima.";
+    else cajaLima.innerHTML = "Y ya pasó lo de Lima, que era lo que de verdad importaba.";
+  }
+  faltan();
+
+  /* ---------- navegación ---------- */
+  const escenas = [...document.querySelectorAll(".escena")];
+  const puntos = document.getElementById("puntos");
+  const siguiente = document.getElementById("siguiente");
+  let actual = 0;
+
+  escenas.forEach((_, i) => {
+    const p = document.createElement("button");
+    p.className = "punto" + (i === 0 ? " on" : "");
+    p.setAttribute("aria-label", "Ir a la parte " + (i+1));
+    p.addEventListener("click", () => ir(i));
+    puntos.appendChild(p);
+  });
+
+  function ir(n){
+    actual = (n + escenas.length) % escenas.length;
+    escenas.forEach((s,i) => s.classList.toggle("activa", i === actual));
+    [...puntos.children].forEach((p,i) => p.classList.toggle("on", i === actual));
+    siguiente.textContent = actual === escenas.length - 1 ? "Volver al inicio" : "Siguiente";
+    if (actual === 0) setTimeout(abrirRamo, 350);
+    if (actual === 1 && !cartaLista && !timer) setTimeout(escribir, 400);
+    if (actual === 2) setTimeout(iniciarAnillo, 250);
+  }
+
+  siguiente.addEventListener("click", () => ir(actual + 1));
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight") ir(actual + 1);
+    if (e.key === "ArrowLeft") ir(actual - 1);
+  });
+
+  setTimeout(abrirRamo, 500);
+</script>
+
+</body>
+</html>
